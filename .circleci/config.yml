@@ -1,0 +1,42 @@
+version: 2.1
+
+executors:
+  windows:
+    machine:
+      image: windows-server-2019-vs2019
+
+jobs:
+  build:
+    executor: windows
+    steps:
+      - checkout
+      - run:
+          name: Download RubyInstaller
+          command: |
+            Invoke-WebRequest -Uri https://github.com/oneclick/rubyinstaller2/releases/download/RubyInstaller-3.3.3-1/rubyinstaller-devkit-3.3.3-1-x64.exe -OutFile rubyinstaller-devkit-3.3.3-1-x64.exe
+      - run:
+          name: Install Ruby
+          command: |
+            .\rubyinstaller-devkit-3.3.3-1-x64.exe /verysilent /currentuser /dir="C:\Ruby" /tasks="modpath,assocfiles"
+      - run:
+          name: Run ridk install
+          command: |
+            C:\Ruby\bin\ridk install 1
+      - run:
+          name: Verify Ruby Installation
+          command: ruby --version
+      - run:
+          name: Install Bundler
+          command: gem install bundler
+      - run:
+          name: Bundle Install
+          command: bundle install
+      - run:
+          name: Run Tests
+          command: bundle exec rspec
+
+workflows:
+  version: 2
+  build_and_test:
+    jobs:
+      - build
