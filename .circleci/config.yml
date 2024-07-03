@@ -3,7 +3,7 @@ version: 2.1
 executors:
   windows:
     machine:
-      image: windows-server-2019-vs2019
+      image: windows-default
 
 jobs:
   build:
